@@ -24,6 +24,9 @@ gem 'jquery-rails'
 gem 'activeadmin'
 gem 'sass-rails'
 
+# XML parsing
+gem "nokogiri", "~> 1.6.0"
+
 group :development, :test do
   gem 'factory_girl_rails', '~> 4.0'
   gem 'forgery'
