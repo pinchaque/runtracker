@@ -1,4 +1,4 @@
-class FixedValueSeed
+class Seed::FixedValue
   def initialize(klass, fstream = STDERR)
     @klass = klass
     @class_name = klass.name
