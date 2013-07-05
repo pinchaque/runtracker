@@ -1,6 +1,5 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 FactoryGirl.define do
   factory :athlete do
+    name { Forgery::Name.full_name }
   end
 end
