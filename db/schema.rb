@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130701023049) do
+ActiveRecord::Schema.define(:version => 20130707000845) do
 
   create_table "activities", :force => true do |t|
     t.datetime "created_at",       :null => false
@@ -20,12 +20,18 @@ ActiveRecord::Schema.define(:version => 20130701023049) do
     t.integer  "athlete_id",       :null => false
     t.string   "name",             :null => false
     t.datetime "start_time",       :null => false
+    t.string   "uid"
   end
+
+  add_index "activities", ["athlete_id"], :name => "index_activities_on_athlete_id"
+  add_index "activities", ["uid"], :name => "index_activities_on_uid", :unique => true
 
   create_table "activity_laps", :force => true do |t|
     t.integer  "activity_id", :null => false
     t.datetime "start_time",  :null => false
   end
+
+  add_index "activity_laps", ["activity_id"], :name => "index_activity_laps_on_activity_id"
 
   create_table "activity_points", :force => true do |t|
     t.integer  "activity_lap_id", :null => false
@@ -37,6 +43,8 @@ ActiveRecord::Schema.define(:version => 20130701023049) do
     t.float    "temperature"
     t.integer  "heart_rate"
   end
+
+  add_index "activity_points", ["activity_lap_id"], :name => "index_activity_points_on_activity_lap_id"
 
   create_table "activity_types", :force => true do |t|
     t.string "name", :null => false

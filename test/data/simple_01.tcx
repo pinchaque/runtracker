@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TrainingCenterDatabase>
+  <Activities>
+    <Activity Sport="Running">
+      <Id>XYZ Activity Name</Id>
+      <Lap StartTime="2013-03-08T00:39:36.000Z">
+        <Track>
+          <Trackpoint>
+            <Time>2013-03-08T00:39:36.000Z</Time>
+            <Position>
+              <LatitudeDegrees>32.71987985819578</LatitudeDegrees>
+              <LongitudeDegrees>-117.16575555503368</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>13.0</AltitudeMeters>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2013-03-08T00:39:42.000Z</Time>
+            <Position>
+              <LatitudeDegrees>32.71971607580781</LatitudeDegrees>
+              <LongitudeDegrees>-117.16573485173285</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>13.399999618530273</AltitudeMeters>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2013-03-08T00:39:46.000Z</Time>
+            <Position>
+              <LatitudeDegrees>32.71958456374705</LatitudeDegrees>
+              <LongitudeDegrees>-117.1657460834831</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>14.0</AltitudeMeters>
+          </Trackpoint>
+          <Trackpoint>
+            <Time>2013-03-08T00:39:50.000Z</Time>
+            <Position>
+              <LatitudeDegrees>32.71947526372969</LatitudeDegrees>
+              <LongitudeDegrees>-117.16576443985105</LongitudeDegrees>
+            </Position>
+            <AltitudeMeters>15.399999618530273</AltitudeMeters>
+          </Trackpoint>
+        </Track>
+      </Lap>
+    </Activity>
+  </Activities>
+</TrainingCenterDatabase>
