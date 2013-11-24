@@ -13,15 +13,11 @@ class Import::Generic
     end
   end
 
-  def extract_date(node, path)
-    'xyz'  
-  end
-
   def extract_string(node, path)
     node.xpath(path).inner_text.strip
   end
 
   def extract_float(node, path)
-    1.1
+    extract_string(node, path).to_f
   end
 end
