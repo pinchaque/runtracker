@@ -54,6 +54,7 @@ class Import::Tcx < Import::Generic
 
   def parse_point(node)
     point = ActivityPoint.new
+    print_node(node)
     point.time = extract_date(node, '//Trackpoint/Time')
     point.latitude = extract_float(node, '//Trackpoint/Position/LatitudeDegrees')
     point.longitude = extract_float(node, '//Trackpoint/Position/LongitudeDegrees')
@@ -67,14 +68,6 @@ class Import::Tcx < Import::Generic
       Time.new(year.to_i, month.to_i, day.to_i, hour.to_i, min.to_i, sec.to_f, '-00:00')
     else
       nil
-    end
-  end
-
-  def print_node(node, depth = 0)
-    prefix = "  " * depth
-    puts prefix + "[" + node.name + "]"
-    node.children.each do |cn|
-      print_node(cn, depth + 1)
     end
   end
 end
