@@ -1,4 +1,5 @@
 #!/bin/bash
+# Script to install needed system packages
 
 sudo apt-get install \
   g++ \
@@ -22,19 +23,4 @@ sudo apt-get install \
   tree \
   unzip \
   zip \
-
-sudo gem install \
-  rails \
-  bcrypt-ruby \
-  factory_girl \
-  factory_girl_rails \
-  fastercsv \
-  forgery \
-  geocoder \
-  haml \
-  haml-rails \
-  meta_search \
-  nokogiri \
-  pg \
-  rubyzip \
-  seed-fu \
+  libpq-dev \
