@@ -20,9 +20,10 @@ end
 
 gem 'haml'
 gem 'haml-rails'
-gem 'jquery-rails'
+gem 'jquery-rails', '~> 2.3.0'
 gem 'activeadmin'
 gem 'sass-rails'
+gem 'meta_search', '>= 1.1.0.pre'
 
 # XML parsing
 gem "nokogiri", "~> 1.6.0"
