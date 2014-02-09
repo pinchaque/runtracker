@@ -59,7 +59,7 @@ class Import::TcxSAXDocument < Nokogiri::XML::SAX::Document
       when 'Id'
         require_activity
         require_lap(false)
-        @activity.uid = @activity.name = @activity.id = extract_string
+        @activity.uid = @activity.name = extract_string
       
       # End of Lap - save it to activity
       when 'Lap'
@@ -74,7 +74,9 @@ class Import::TcxSAXDocument < Nokogiri::XML::SAX::Document
       # End of Trackpoint - save it to lap
       when 'Trackpoint'
         require_point
-        @lap.activity_points << @point
+        if valid_point
+          @lap.activity_points << @point
+        end
         @point = nil
 
       # Data for ActivityPoint
@@ -165,5 +167,10 @@ class Import::TcxSAXDocument < Nokogiri::XML::SAX::Document
     when /^bicycle/i then ActivityType::CYCLE
     else ActivityType::UNKNOWN
     end
+  end
+
+  # returns true if the point contains enough data to be worth keeping
+  def valid_point
+    not (@point.time.nil? or @point.latitude.nil? or @point.longitude.nil?)
   end
 end

@@ -14,7 +14,7 @@ describe Import::Tcx do
 fn = File.expand_path('../../../../test/data/simple_01.tcx', __FILE__)
   it "#{fn} parses" do
     File.open(fn) do |f|
-      activity = Import::Tcx.new.parse(f)
+      activity = Import::Tcx::parse(f)
       activity.activity_type_id.should eq(ActivityType::RUN)
       activity.uid.should eq('XYZ Activity Name')
       activity.name.should eq('XYZ Activity Name')
