@@ -1,4 +1,4 @@
-class Import::Generic
+class Import::Generic < Nokogiri::XML::SAX::Document
   def parse(io)
   end
 
