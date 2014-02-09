@@ -11,7 +11,7 @@ class ActivityLap < ActiveRecord::Base
   def calculate_start_time
     start = nil
     activity_points.each do |point|
-      start = point.time if (start.nil? or (start < point.time))
+      start = point.time if (start.nil? or (start > point.time))
     end
     start
   end

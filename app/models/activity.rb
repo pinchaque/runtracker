@@ -15,7 +15,7 @@ class Activity < ActiveRecord::Base
     start = nil
     activity_laps.each do |lap|
       lap_start = lap.calculate_start_time
-      start = lap_start if (start.nil? or (start < lap_start))
+      start = lap_start if (start.nil? or (start > lap_start))
     end
     start
   end

@@ -9,54 +9,87 @@ class Import::TcxSAXDocument < Nokogiri::XML::SAX::Document
     @activity = nil
     @lap = nil
     @point = nil
+    @str_buffer = ''
   end
 
-  def end_document
-    puts "the document has ended"
-  end
-  
   def start_element(name, attributes = [])
-    puts "#{name} started"
-
-    # reset to get ready for procesing text
-    @last_tag = name
+   attr_hash = Hash[*attributes.flatten]
 
     case name
       when 'Activity'
-      when 'Id'
+        # only allow one activity per file
+        require_activity(false)
+        @activity = Activity.new
+        @activity.activity_type_id = parse_type(attr_hash['Sport'])
+
       when 'Lap'
+        require_activity
+        require_lap(false)
+        @lap = ActivityLap.new
+
       when 'Trackpoint'
+        require_lap
+        require_point(false)
         @point = ActivityPoint.new
 
       when 'Time'
+        require_point
+
       when 'LatitudeDegrees'
+        require_point
+
       when 'LongitudeDegrees'
+        require_point
+
       when 'AltitudeMeters'
+        require_point
     end
+    
+    # reset
+    @str_buffer = ''
   end
 
   def end_element(name)
     case name
       when 'Activity'
+        require_activity
+        # compute start time based on all laps and points
+        @activity.calculate_start_time!
 
       when 'Id'
+        require_activity
+        require_lap(false)
+        @activity.uid = @activity.name = @activity.id = extract_string
+      
+      # End of Lap - save it to activity
       when 'Lap'
+        require_lap
 
+        # compute start time based on all points
+        @lap.calculate_start_time!
+
+        @activity.activity_laps << @lap
+        @lap = nil
+
+      # End of Trackpoint - save it to lap
       when 'Trackpoint'
         require_point
-        @activity << @point
+        @lap.activity_points << @point
         @point = nil
 
-      ### Data for ActivityPoint ###
+      # Data for ActivityPoint
       when 'Time'
         require_point
         @point.time = extract_date
+
       when 'LatitudeDegrees'
         require_point
         @point.latitude = extract_float
+
       when 'LongitudeDegrees'
         require_point
         @point.longitude = extract_float
+
       when 'AltitudeMeters'
         require_point
         @point.elevation = extract_float
@@ -64,7 +97,6 @@ class Import::TcxSAXDocument < Nokogiri::XML::SAX::Document
     
     # reset
     @str_buffer = ''
-    @last_tag = nil
   end
 
   def characters(str)
@@ -72,101 +104,59 @@ class Import::TcxSAXDocument < Nokogiri::XML::SAX::Document
     str.strip!
     return if str.empty?
 
-    @str_buffer .= str
+    @str_buffer << str
   end
 
   def error(str)
+    raise ImportException, 'ERROR: ' + str
   end
 
   def warning(str)
-  end
-
-  def activity
-    nil
+    raise ImportException, 'WARNING: ' + str
   end
 
   private
   @activity
   @lap
   @point
-  @last_tag
   @str_buffer
+      
+      
+  # ensures @activity is set iff v
+  def require_activity(v = true)
+    raise ImportException, "Expected open activity" if @activity.nil? == v
+  end
+
+  # ensures @lap is set iff v
+  def require_lap(v = true)
+    raise ImportException, "Expected open lap" if @lap.nil? == v
+  end
+
+  # ensures @point is set iff v
+  def require_point(v = true)
+    raise ImportException, "Expected open point" if @point.nil? == v
+  end
     
 
   # extracts a Float object from @str_buffer
   def extract_float
-    Float(@str_buffer.strip)
+    Float(extract_string)
   end
 
   # extracts a Time object from @str_buffer
   # expected format for TCX files: 2013-03-08T00:39:36.000Z
   def extract_date
-    if (/(?<year>\d\d\d\d)-(?<month>\d\d)-(?<day>\d\d)T(?<hour>\d\d):(?<min>\d\d):(?<sec>\d\d\.?\d*)Z/ =~ extract_string(node, path))
+    if (/(?<year>\d\d\d\d)-(?<month>\d\d)-(?<day>\d\d)T(?<hour>\d\d):(?<min>\d\d):(?<sec>\d\d\.?\d*)Z/ =~ extract_string)
       Time.new(year.to_i, month.to_i, day.to_i, hour.to_i, min.to_i, sec.to_f, '-00:00')
     else
       nil
     end
   end
 
-
-
-###############################33
-
-  def foo
-    # parse one and only one activity
-    activity = nil
-    node = doc.xpath('//Activities/Activity')
-    if node.count == 1
-      activity = parse_activity(node[0])
-    elsif node.count > 1
-      raise ImportException, "Only one <Activity> per file", caller
-    else
-      activity = Activity.new
-    end
-    activity
+  def extract_string
+    @str_buffer.strip
   end
 
-  # Handles <Activity> nodes within file
-  def parse_activity(node)
-    activity = Activity.new
-
-    # <Activity Sport="Running">
-    activity.activity_type_id = parse_type(node['Sport'])
-
-    # <Id>XYZ Activity Name</Id>
-    activity.uid = extract_string(node, '//Activity/Id')
-    activity.name = activity.uid
-
-    # <Lap StartTime="2013-03-08T00:39:36.000Z">
-    node.xpath('//Activity/Lap').each do |lap_node|
-      activity.activity_laps << parse_lap(lap_node)
-    end
-
-    # compute start time based on all laps and points
-    activity.calculate_start_time!
-  end
-
-  # Handles <Lap> nodes within file
-  def parse_lap(node)
-    lap = ActivityLap.new
-
-    # Now we process all trackpoints under <Track>
-    node.xpath('//Lap/Track/Trackpoint').each do |point_node|
-      lap.activity_points << parse_point(point_node)
-    end
-    
-    # compute start time based on all points
-    lap.calculate_start_time!
-  end
-
-  def parse_point(node)
-    point = ActivityPoint.new
-    print_node(node)
-    point.latitude = extract_float(node, '//Trackpoint/Position/LatitudeDegrees')
-    #point.longitude = extract_float(node, '//Trackpoint/Position/LongitudeDegrees')
-    #point.elevation = extract_float(node, '//Trackpoint/AltitudeMeters')
-    point
-  end
   def parse_type(type_str)
     case type_str
     when /^run/i then ActivityType::RUN
@@ -175,24 +165,5 @@ class Import::TcxSAXDocument < Nokogiri::XML::SAX::Document
     when /^bicycle/i then ActivityType::CYCLE
     else ActivityType::UNKNOWN
     end
-  end
-
-  def extract_string(node, path)
-    node.xpath(path).inner_text.strip
-  end
-
-  # returns first numeric value matching node/path
-  def extract_float(node, path)
-    f = nil
-    node.xpath(path).each do |n|
-      begin
-        f = Float(n.inner_text.strip)
-        puts "xxx2[" + f.to_s + "]"
-      rescue
-        # ignore
-      end
-    end
-    puts "xxx1[" + f.to_s + "]"
-    return f
   end
 end
