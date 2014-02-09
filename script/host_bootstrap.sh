@@ -24,3 +24,4 @@ sudo apt-get install \
   unzip \
   zip \
   libpq-dev \
+  libxslt1-dev \
