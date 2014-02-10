@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140209233435) do
+ActiveRecord::Schema.define(:version => 20140210000940) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -87,6 +87,21 @@ ActiveRecord::Schema.define(:version => 20140209233435) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.string   "name",       :null => false
+  end
+
+  create_table "sum_activities", :force => true do |t|
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
+    t.integer  "activity_type_id", :null => false
+    t.integer  "athlete_id",       :null => false
+    t.integer  "activity_id",      :null => false
+    t.string   "name",             :null => false
+    t.datetime "start_time",       :null => false
+    t.datetime "end_time",         :null => false
+    t.integer  "duration",         :null => false
+    t.float    "distance",         :null => false
+    t.float    "elevation_gain"
+    t.float    "elevation_loss"
   end
 
 end
