@@ -1,3 +1,4 @@
+# Table that summarizes data for Activities
 class SumActivity < ActiveRecord::Base
   attr_accessible :name
   attr_accessible :start_time
@@ -11,8 +12,9 @@ class SumActivity < ActiveRecord::Base
   belongs_to :activity_type
   
 
-  def SumActivity.create_from_activity(activity)
-    sa = SumActivity.new
+  # Creates a SumActivity object from the given Activity
+  def SumActivity.create_from_activity(activity, sa = nil)
+    sa = SumActivity.new if sa.nil?
 
     # copy some fields directly over
     sa.activity_id = activity.id
@@ -65,5 +67,21 @@ class SumActivity < ActiveRecord::Base
 
     # return
     sa
+  end
+
+  # Recalculates summary data for the specified activity
+  # If this summary is already in the DB then it is updated
+  def SumActivity.recalculate(activity)
+    sa = SumActivity.create_from_activity(activity, activity.sum_activity)
+    sa.save
+  end
+
+  # Recalculates summary data for all activities
+  # This will first remove all existing summaries
+  def SumActivity.recalculate_all
+    SumActivity.delete_all
+    Activity.find_each do |a| 
+      SumActivity.create_from_activity(a).save 
+    end
   end
 end
