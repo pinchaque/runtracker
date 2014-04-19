@@ -13,6 +13,7 @@ Seed::FixedValue.new(ActivityType).seed(
   ActivityLap,
   ActivityPoint,
   Athlete,
+  SumActivity,
 ].each do |o|
   puts("Clearing #{o}")
   o.delete_all
@@ -31,5 +32,6 @@ Dir.glob(File.expand_path('../../test/data/*.tcx.gz', __FILE__)) do |fn|
     activity = Import::Tcx::parse(f)
     activity.athlete_id = athlete.id
     activity.save
+    SumActivity.recalculate(activity)
   end
 end

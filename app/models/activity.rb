@@ -5,6 +5,7 @@ class Activity < ActiveRecord::Base
   belongs_to :athlete
   belongs_to :activity_type
   has_many :activity_laps
+  has_one :sum_activity
 
   def calculate_start_time!
     self.start_time = calculate_start_time
