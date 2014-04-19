@@ -26,6 +26,7 @@ class SumActivity < ActiveRecord::Base
     sa.elevation_gain = 0.0 # feet
     sa.elevation_loss = 0.0 # feet
     sa.end_time = nil
+    sa.duration = 0
     max_time = last_lat = last_lng = last_elev = nil
 
     # iterate through all contained points to get remaining fields
@@ -37,7 +38,7 @@ class SumActivity < ActiveRecord::Base
 
         # update distance
         if not (last_lat.nil? or last_lng.nil?)
-          sa.distance += Geo::distance(
+          sa.distance += Util::Geo::distance(
             last_lat, last_lng, 
             pt.latitude, pt.longitude)
         end
@@ -60,7 +61,7 @@ class SumActivity < ActiveRecord::Base
     end
 
     # finalize
-    sa.duration = end_time - sa.start_time
+    sa.duration = sa.end_time - sa.start_time unless sa.end_time.nil? or sa.start_time.nil?
 
     # return
     sa
